@@ -17,7 +17,6 @@ async def start_command(message: types.Message):
 
 @dp.message(lambda message: message.content_type ==  types.ContentType.TEXT)
 async def data_message(message: types.Message):
-
     try:
         data = json.loads(message.text)
         dt_from = data['dt_from']
