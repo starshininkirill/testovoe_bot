@@ -4,7 +4,7 @@ import asyncio
 from db import create_data
 import json
 
-API_TOKEN = '7325780980:AAHpIw6BQ1pDVhVBapU4MxNbUmms4VXFePA'
+API_TOKEN = 'YOU TOKEN'
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
