@@ -5,8 +5,7 @@ client = MongoClient("localhost", 27017)
 db = client.testovoe
 collection = db.sample_collection
 
-
-def create_data(dt_from, dt_upto, group_by):
+async def create_data(dt_from, dt_upto, group_by):
     dt_from = datetime.fromisoformat(dt_from)
     dt_upto = datetime.fromisoformat(dt_upto)
 
@@ -37,13 +36,12 @@ def create_data(dt_from, dt_upto, group_by):
     else:
         raise ValueError("no sort type matches")
 
-
     # Фильтруем по дате
     match_stage = {
         '$match': {
             'dt': {
-                '$gt': dt_from,
-                '$lt': dt_upto
+                '$gte': dt_from,
+                '$lte': dt_upto
             }
         }
     }
@@ -83,12 +81,13 @@ def create_data(dt_from, dt_upto, group_by):
         # Проходим циклом по всем датам от и до
         while current_date <= dt_upto:
             label = format_label({'year': current_date.year, 'month': current_date.month})
-            # Проверяем есть ли такая дата в результирующум массиве
+            # Проверяем есть ли такая дата в результирующем массиве
             if label not in result_dict:
                 # Если даты нет, то устанавливаем её значение в 0
                 result_dict[label] = 0
-            current_date += timedelta(days=32)
-            current_date = current_date.replace(day=1)
+            # Гарантируем переход в следующий месяц и устанавливаем начало месяца
+            next_month = current_date.replace(day=28) + timedelta(days=4)
+            current_date = next_month.replace(day=1)
     elif group_by == 'day':
         while current_date <= dt_upto:
             label = format_label({'year': current_date.year, 'month': current_date.month, 'day': current_date.day})
@@ -107,5 +106,3 @@ def create_data(dt_from, dt_upto, group_by):
         dataset.append(result_dict[label])
 
     return {"dataset": dataset, "labels": labels}
-
-
